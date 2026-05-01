@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRWE Reviewer — Modules 5–8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --surface3: #212d42;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8edf5;
+  --text2: #8b96a8;
+  --text3: #5a6478;
+  --accent: #4f7cff;
+  --accent2: #7b5ea7;
+  --green: #22c55e;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --cyan: #06b6d4;
+
+  --m5: #4f7cff;
+  --m6: #22c55e;
+  --m7: #f59e0b;
+  --m8: #a78bfa;
+
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 80px 24px 64px;
+  text-align: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(79,124,255,0.15) 0%, transparent 70%);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79,124,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79,124,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, #8ba4ff 60%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero p {
+  font-size: 17px;
+  color: var(--text2);
+  max-width: 520px;
+  margin: 0 auto 36px;
+  font-weight: 300;
+}
+.module-pills {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pill {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  border: 1px solid;
+}
+.pill-5 { color: var(--m5); border-color: rgba(79,124,255,0.4); background: rgba(79,124,255,0.1); }
+.pill-6 { color: var(--m6); border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.1); }
+.pill-7 { color: var(--m7); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); }
+.pill-8 { color: var(--m8); border-color: rgba(167,139,250,0.4); background: rgba(167,139,250,0.1); }
+
+/* ── LAYOUT ── */
+.container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+/* ── NAV TABS ── */
+.nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,14,26,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+}
+.nav-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav-tab {
+  padding: 14px 20px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+.nav-tab:hover { color: var(--text2); }
+.nav-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ── SECTIONS ── */
+.page { display: none; padding: 40px 0 80px; }
+.page.active { display: block; }
+
+.section { margin-bottom: 40px; }
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.section-head h2 {
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+}
+.mod-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: var(--border2); }
+.card h3 {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+.card p, .card li {
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+.card ul { padding-left: 1.2rem; }
+.card li { margin-bottom: 4px; }
+.card strong { color: var(--text); font-weight: 500; }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { background: var(--surface2); }
+th { padding: 10px 14px; text-align: left; font-family: var(--font-head); font-weight: 600; font-size: 12px; letter-spacing: 0.04em; color: var(--text2); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+td { padding: 9px 14px; color: var(--text2); border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ── CODE BADGES ── */
+.cmd {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: rgba(79,124,255,0.1);
+  border: 1px solid rgba(79,124,255,0.25);
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: #93b4ff;
+  word-break: break-all;
+}
+.cmd-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 6px;
+}
+.cmd-block .cmd-line {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #93b4ff;
+  display: block;
+  margin-bottom: 4px;
+}
+.cmd-block .cmd-desc {
+  font-size: 12.5px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* ── FLAGS ── */
+.flag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin: 2px; font-family: var(--font-mono); }
+.flag-a { background: rgba(79,124,255,0.15); color: #93b4ff; border: 1px solid rgba(79,124,255,0.3); }
+.flag-o { background: rgba(34,197,94,0.12); color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+.flag-m { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+
+/* ── QUIZ ── */
+.quiz-wrap { margin-top: 48px; }
+.quiz-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.quiz-topbar h2 {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 700;
+}
+.score-badge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 6px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text2);
+}
+.q-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.q-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.q-text {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+.choice-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.choice-btn:hover { background: var(--surface3); border-color: var(--border2); color: var(--text); }
+.choice-btn.selected { border-color: var(--accent); background: rgba(79,124,255,0.1); color: var(--text); }
+.choice-btn.correct { border-color: var(--green); background: rgba(34,197,94,0.1); color: #86efac; }
+.choice-btn.wrong { border-color: var(--red); background: rgba(239,68,68,0.1); color: #fca5a5; }
+.choice-key {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+.choice-btn.selected .choice-key { color: var(--accent); }
+.choice-btn.correct .choice-key { color: var(--green); }
+.choice-btn.wrong .choice-key { color: var(--red); }
+.explanation-box {
+  display: none;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border-left: 3px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.explanation-box.show { display: block; }
+.btn-check {
+  display: block;
+  margin: 14px auto 0;
+  padding: 9px 28px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-check:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+
+/* ── GLOSSARY ── */
+.glossary-grid { display: grid; gap: 6px; }
+.gterm {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  align-items: start;
+  font-size: 13.5px;
+  transition: border-color 0.15s;
+}
+.gterm:hover { border-color: var(--border2); }
+.gterm-name { font-family: var(--font-mono); font-size: 12.5px; color: #93b4ff; font-weight: 700; padding-top: 1px; }
+.gterm-def { color: var(--text2); line-height: 1.55; }
+
+/* ── FINAL EXAM ── */
+.exam-score-hero {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+.exam-score-hero .big-num {
+  font-family: var(--font-head);
+  font-size: 56px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent), var(--m8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.exam-score-hero .score-label {
+  font-size: 13px;
+  color: var(--text3);
+  font-family: var(--font-mono);
+  margin-top: 4px;
+}
+.prog-track {
+  background: var(--surface2);
+  border-radius: 999px;
+  height: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--m8));
+  transition: width 0.5s cubic-bezier(.4,0,.2,1);
+}
+.mod-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.tag-m5 { background: rgba(79,124,255,0.15); color: #93b4ff; }
+.tag-m6 { background: rgba(34,197,94,0.12); color: #86efac; }
+.tag-m7 { background: rgba(245,158,11,0.12); color: #fcd34d; }
+.tag-m8 { background: rgba(167,139,250,0.15); color: #c4b5fd; }
+
+/* ── COMPARE PAGE ── */
+.compare-grid { display: grid; gap: 10px; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--font-mono);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* ── TRUE/FALSE ── */
+.tf-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.tf-card .tf-stmt {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.55;
+}
+.tf-btns { display: flex; gap: 8px; margin-bottom: 0; }
+.tf-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.tf-btn:hover { border-color: var(--border2); color: var(--text); background: var(--surface3); }
+.tf-btn.tf-true-sel { border-color: var(--green); background: rgba(34,197,94,0.12); color: #86efac; }
+.tf-btn.tf-false-sel { border-color: var(--red); background: rgba(239,68,68,0.12); color: #fca5a5; }
+.tf-btn.tf-correct { border-color: var(--green); background: rgba(34,197,94,0.15); color: #86efac; }
+.tf-btn.tf-wrong { border-color: var(--red); background: rgba(239,68,68,0.12); color: #fca5a5; }
+.tf-reveal {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-left: 3px solid var(--green);
+  border-radius: 0 10px 10px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.tf-reveal.show { display: block; }
+.tf-reveal.wrong-reveal { border-left-color: var(--red); }
+
+/* ── REAL-LIFE / SCENARIO CARDS ── */
+.scenario-section { margin-bottom: 40px; }
+.rl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+.rl-card:hover { border-color: var(--border2); }
+.rl-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.07em;
+  margin-bottom: 10px;
+}
+.rl-tag-app { background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.25); }
+.rl-tag-fix { background: rgba(245,158,11,0.12); color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+.rl-title {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.rl-body { font-size: 13.5px; color: var(--text2); line-height: 1.65; }
+.rl-body strong { color: var(--text); font-weight: 500; }
+.rl-steps { margin-top: 10px; padding-left: 1.2rem; }
+.rl-steps li { font-size: 13px; color: var(--text2); margin-bottom: 4px; line-height: 1.55; }
+.problem-box {
+  background: rgba(239,68,68,0.07);
+  border: 1px solid rgba(239,68,68,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: #fca5a5;
+}
+.fix-box {
+  background: rgba(34,197,94,0.07);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 10px 0;
+  font-size: 13px;
+  color: #86efac;
+}
+.problem-box strong, .fix-box strong { font-weight: 600; display: block; margin-bottom: 3px; }
+
+/* ── MISSING CONTENT CARDS ── */
+.missing-note {
+  background: rgba(167,139,250,0.07);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 10px;
+  padding: 8px 13px;
+  font-size: 12px;
+  color: #c4b5fd;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+}
+
+/* ── MOBILE NAV ── */
+.mob-nav-btn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 200;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(79,124,255,0.4);
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  transition: transform 0.2s;
+}
+.mob-nav-btn:active { transform: scale(0.92); }
+.mob-drawer {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 190;
+  background: var(--surface);
+  border-top: 1px solid var(--border2);
+  border-radius: 20px 20px 0 0;
+  padding: 16px 16px 32px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+}
+.mob-drawer.open { transform: translateY(0); }
+.mob-drawer-handle {
+  width: 40px; height: 4px;
+  background: var(--border2);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.mob-drawer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mob-drawer-btn {
+  padding: 12px 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.mob-drawer-btn:active { background: var(--surface3); }
+.mob-drawer-btn.active { background: rgba(79,124,255,0.15); color: #93b4ff; border-color: rgba(79,124,255,0.35); }
+.mob-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 185;
+}
+.mob-overlay.open { display: block; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .hero { padding: 60px 16px 48px; }
+  .hero h1 { font-size: 38px; }
+  .hero p { font-size: 15px; }
+  .nav-wrap { display: none; }
+  .mob-nav-btn { display: flex; }
+  .mob-drawer { display: block; }
+  .container { padding: 0 14px; }
+  .page { padding: 24px 0 100px; }
+  .gterm { grid-template-columns: 1fr; gap: 4px; }
+  .quiz-topbar { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .card { padding: 14px 16px; }
+  .q-card { padding: 16px; }
+  .exam-score-hero .big-num { font-size: 40px; }
+  .tf-btns { flex-direction: row; }
+  table { font-size: 12px; }
+  th, td { padding: 7px 8px; }
+  .section-head h2 { font-size: 15px; }
+  .cmd-block { padding: 10px 12px; }
+  .rl-card { padding: 14px 16px; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 30px; }
+  .module-pills { gap: 6px; }
+  .pill { font-size: 11px; padding: 4px 12px; }
+  .exam-score-hero { padding: 20px 16px; }
+  .mob-drawer-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">SRWE v7.0 · Cisco Networking Academy</div>
+  <h1>Modules 5–8<br>Reviewer</h1>
+  <p>Complete study guide with concept notes, command reference, key terms glossary, and quizzes for every module.</p>
+  <div class="module-pills">
+    <span class="pill pill-5">M5 · STP</span>
+    <span class="pill pill-6">M6 · EtherChannel</span>
+    <span class="pill pill-7">M7 · DHCPv4</span>
+    <span class="pill pill-8">M8 · SLAAC & DHCPv6</span>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav-inner">
+    <button class="nav-tab active" onclick="showPage('p-m5',this)">Module 5: STP</button>
+    <button class="nav-tab" onclick="showPage('p-m6',this)">Module 6: EtherChannel</button>
+    <button class="nav-tab" onclick="showPage('p-m7',this)">Module 7: DHCPv4</button>
+    <button class="nav-tab" onclick="showPage('p-m8',this)">Module 8: SLAAC & DHCPv6</button>
+    <button class="nav-tab" onclick="showPage('p-cmd',this)">Commands</button>
+    <button class="nav-tab" onclick="showPage('p-gloss',this)">Glossary</button>
+    <button class="nav-tab" onclick="showPage('p-compare',this)">Quick Tables</button>
+    <button class="nav-tab" onclick="showPage('p-exam',this)">Final Exam</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ MODULE 5 ═══════════════════════════════════ -->
+<div id="p-m5" class="page active">
+<div class="container">
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m5)"></div>
+      <h2>5.1 — Purpose of STP</h2>
+    </div>
+    <div class="card">
+      <h3>Why STP Exists</h3>
+      <p>Redundant paths in a switched Ethernet network create <strong>Layer 2 loops</strong>, causing:</p>
+      <ul>
+        <li>MAC address table instability — constant changes from looping broadcasts</li>
+        <li>Link saturation — frames loop endlessly consuming all bandwidth</li>
+        <li>High CPU utilization on switches and end-devices</li>
+        <li><strong>Broadcast storms</strong> — abnormally high broadcasts that can disable a network within seconds</li>
+      </ul>
+      <p style="margin-top:10px;">Unlike IPv4 (TTL) or IPv6 (Hop Limit), <strong>Ethernet has no built-in mechanism to limit looping frames</strong>. STP was invented specifically to solve this.</p>
+    </div>
+    <div class="card">
+      <h3>Spanning Tree Protocol (STP) — IEEE 802.1D</h3>
+      <p>Invented by <strong>Radia Perlman</strong> at Digital Equipment Corporation (1985). The <strong>Spanning Tree Algorithm (STA)</strong> creates a loop-free topology by:</p>
+      <ul>
+        <li>Selecting a single <strong>root bridge</strong> as the reference point for all switches</li>
+        <li>Intentionally <strong>blocking redundant paths</strong> (placing ports in blocking state)</li>
+        <li><strong>Recalculating</strong> and unblocking when a link fails — providing redundancy</li>
+      </ul>
+      <p style="margin-top:8px;">Spanning tree is <strong>enabled by default</strong> on Cisco switches.</p>
+    </div>
+    <div class="card">
+      <h3>A Host Caught in a Layer 2 Loop</h3>
+      <p>Is completely inaccessible to other hosts. The switch cannot reliably forward unicast frames because the MAC address table keeps changing with every looping broadcast frame — an unknown unicast is flooded out all ports except the ingress, making the loop even worse.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m5)"></div>
+      <h2>5.2 — STP Operations</h2>
+    </div>
+    <div class="card">
+      <h3>4 Steps to a Loop-Free Topology (STA)</h3>
+      <ul>
+        <li><strong>Step 1 — Elect the root bridge:</strong> Switches exchange BPDUs; the switch with the lowest BID becomes root</li>
+        <li><strong>Step 2 — Elect root ports:</strong> Every non-root switch selects 1 port with the lowest cost path to root</li>
+        <li><strong>Step 3 — Elect designated ports:</strong> One designated port per segment — the port with the best path to root on that segment</li>
+        <li><strong>Step 4 — Elect alternate (blocked) ports:</strong> All remaining ports go to blocking state to prevent loops</li>
+      </ul>
+      <p style="margin-top:10px;">Switches use <strong>BPDUs (Bridge Protocol Data Units)</strong> — sent every 2 seconds — to exchange information and make all these decisions.</p>
+    </div>
+    <div class="card">
+      <h3>Bridge ID (BID) Structure</h3>
+      <p>BID = <strong>Bridge Priority</strong> (2 bytes) + <strong>Extended System ID / VLAN</strong> (12 bits) + <strong>MAC Address</strong> (6 bytes)</p>
+      <ul style="margin-top:8px;">
+        <li>Default bridge priority: <strong>32768</strong> (range: 0–61440 in increments of 4096)</li>
+        <li>Lower BID = preferred root bridge. Priority 0 takes precedence over all others.</li>
+        <li>Tie-break: same priority → <strong>lowest MAC address</strong> (in hex) wins</li>
+        <li>Note: Default BID = 32769 (32768 priority + 1 for VLAN 1)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Root Path Cost — Port Costs</h3>
+      <p>The <strong>internal root path cost</strong> = sum of all port costs along the path to the root bridge. Lower cost = preferred path.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Link Speed</th><th>STP Cost (802.1D-1998)</th><th>RSTP Cost (802.1w-2004)</th></tr></thead>
+          <tbody>
+            <tr><td>10 Gbps</td><td>2</td><td>2,000</td></tr>
+            <tr><td>1 Gbps</td><td>4</td><td>20,000</td></tr>
+            <tr><td>100 Mbps</td><td>19</td><td>200,000</td></tr>
+            <tr><td>10 Mbps</td><td>100</td><td>2,000,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Root Port Tie-Breaking (Multiple Equal-Cost Paths)</h3>
+      <p>When a switch has multiple equal-cost paths to the root bridge:</p>
+      <ul>
+        <li><strong>1st:</strong> Lowest sender BID</li>
+        <li><strong>2nd:</strong> Lowest sender port priority (default: 128)</li>
+        <li><strong>3rd:</strong> Lowest sender port ID</li>
+      </ul>
+      <p style="margin-top:8px;">All tiebreakers are based on the <strong>sender's</strong> values, not the receiver's.</p>
+    </div>
+    <div class="card">
+      <h3>STP Timers</h3>
+      <ul>
+        <li><strong>Hello Timer:</strong> 2 sec default (range 1–10) — interval between BPDUs</li>
+        <li><strong>Forward Delay:</strong> 15 sec default (range 4–30) — time spent in each of Listening and Learning states</li>
+        <li><strong>Max Age:</strong> 20 sec default (range 6–40) — max wait before attempting a topology change</li>
+      </ul>
+      <p style="margin-top:8px;">Default timers are set on the root bridge and apply to the entire STP domain.</p>
+    </div>
+    <div class="card">
+      <h3>STP Port States</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>State</th><th>BPDU</th><th>MAC Table</th><th>Forwards Frames?</th></tr></thead>
+          <tbody>
+            <tr><td>Blocking</td><td>Receive only</td><td>No update</td><td>No</td></tr>
+            <tr><td>Listening</td><td>Send &amp; receive</td><td>No update</td><td>No</td></tr>
+            <tr><td>Learning</td><td>Send &amp; receive</td><td>Updating</td><td>No</td></tr>
+            <tr><td>Forwarding</td><td>Send &amp; receive</td><td>Updating</td><td>Yes</td></tr>
+            <tr><td>Disabled</td><td>None</td><td>No update</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px;">Total delay from Blocking → Forwarding (standard STP): <strong>30 seconds</strong> (15 sec Listening + 15 sec Learning).</p>
+    </div>
+    <div class="card">
+      <h3>Per-VLAN Spanning Tree (PVST)</h3>
+      <p>A <strong>separate STP instance runs per VLAN</strong>. Different root bridges can be elected for different sets of VLANs, enabling load balancing. If all ports are in VLAN 1, only one spanning tree instance exists.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m5)"></div>
+      <h2>5.3 — Evolution of STP</h2>
+    </div>
+    <div class="card">
+      <h3>STP Versions — Full Comparison</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Version</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td>STP (CST)</td><td>Original IEEE 802.1D. One instance for the entire bridged network regardless of VLANs. Also called Common Spanning Tree.</td></tr>
+            <tr><td>PVST+</td><td>Cisco enhancement — separate 802.1D instance per VLAN. Supports PortFast, UplinkFast, BackboneFast, BPDU guard, BPDU filter, root guard, loop guard. <strong>Default on Cisco IOS 15.0+.</strong></td></tr>
+            <tr><td>802.1D-2004</td><td>Updated STP incorporating IEEE 802.1w (RSTP).</td></tr>
+            <tr><td>RSTP (802.1w)</td><td>Rapid Spanning Tree Protocol — faster convergence (sometimes milliseconds). Uses 3 port states. Backward compatible with STP.</td></tr>
+            <tr><td>Rapid PVST+</td><td>Cisco's RSTP + PVST+ = separate 802.1w instance per VLAN. Requires explicit configuration.</td></tr>
+            <tr><td>MSTP / MST</td><td>Maps multiple VLANs to same spanning tree instance. MST = Cisco implementation, up to 16 RSTP instances.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>RSTP Port States vs STP</h3>
+      <p>RSTP reduces 5 STP states to only <strong>3 states</strong>. The Disabled, Blocking, and Listening states are merged into a single <strong>Discarding</strong> state.</p>
+      <p style="margin-top:8px;">RSTP port roles: Root, Designated, <strong>Alternate</strong> (replaces blocked — has alternate path to root), <strong>Backup</strong> (backup to shared medium like a hub).</p>
+      <p style="margin-top:6px;">RSTP can achieve convergence in as little as <strong>a few hundred milliseconds</strong> vs. STP's 30–50 seconds.</p>
+    </div>
+    <div class="card">
+      <h3>PortFast</h3>
+      <p>Allows a switch access port to bypass the 30-second Listening + Learning delay — immediately transitions to <strong>Forwarding</strong>. Prevents DHCP clients from timing out during STP convergence.</p>
+      <ul style="margin-top:8px;">
+        <li><strong>Use only on access ports</strong> connecting end devices (PCs, printers, IP phones)</li>
+        <li><strong>Never use on switch-to-switch links</strong> — this would create a spanning tree loop risk</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>BPDU Guard</h3>
+      <p>When enabled on a PortFast port, <strong>immediately puts the port into errdisabled state</strong> if any BPDU is received. A PortFast port should never see BPDUs — that means a switch was connected where only an end device should be.</p>
+      <p style="margin-top:8px;">The administrator must <strong>manually re-enable</strong> the port after an errdisabled event.</p>
+    </div>
+    <div class="card">
+      <h3>Why Move Away from STP?</h3>
+      <p>Layer 3 routing allows redundant paths and loops in topology <strong>without blocking ports</strong>. Routing protocols offer better convergence predictability. Some enterprise designs now use <strong>Layer 3 everywhere except the access layer</strong> — connections between access and distribution switches are Layer 3 links, eliminating the need for STP at those layers.</p>
+    </div>
+  </div>
+
+  <!-- MODULE 5 QUIZ -->
+  <div class="quiz-wrap">
+    <div class="quiz-topbar">
+      <h2>Module 5 Quiz</h2>
+      <div class="score-badge" id="score-m5">0 / 15</div>
+    </div>
+    <div id="qbox-m5"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ MODULE 6 ═══════════════════════════════════ -->
+<div id="p-m6" class="page">
+<div class="container">
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m6)"></div>
+      <h2>6.1 — EtherChannel Operation</h2>
+    </div>
+    <div class="card">
+      <h3>What is EtherChannel?</h3>
+      <p>A link aggregation technology that groups multiple physical Ethernet links into <strong>one single logical link</strong>. It provides:</p>
+      <ul>
+        <li><strong>Fault-tolerance</strong> — loss of one physical link doesn't change the logical topology</li>
+        <li><strong>Load sharing</strong> — traffic is distributed across all physical links</li>
+        <li><strong>Increased bandwidth</strong> — combined speed of all member links</li>
+        <li><strong>Redundancy</strong> — without STP blocking the bundle</li>
+      </ul>
+      <p style="margin-top:8px;">When configured, the resulting virtual interface is called a <strong>port channel</strong>. STP sees EtherChannel as a <strong>single logical link</strong> — if STP blocks it, the entire bundle is blocked (not individual ports).</p>
+    </div>
+    <div class="card">
+      <h3>Implementation Restrictions</h3>
+      <ul>
+        <li>Cannot mix interface types (e.g., FastEthernet + GigabitEthernet in same group)</li>
+        <li>Maximum <strong>8 ports</strong> per EtherChannel group</li>
+        <li>Max bandwidth: <strong>800 Mbps</strong> (Fast) or <strong>8 Gbps</strong> (Gigabit)</li>
+        <li>Cisco Catalyst 2960 supports up to <strong>6 EtherChannels</strong></li>
+        <li>All member ports must be <strong>Layer 2</strong></li>
+        <li>Physical port configuration must be <strong>consistent on both devices</strong></li>
+        <li>Config on port-channel interface affects all physical members</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>PAgP — Port Aggregation Protocol (Cisco Proprietary)</h3>
+      <p>Sends packets every <strong>30 seconds</strong> to manage EtherChannel links. Checks configuration consistency.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>S1 Mode</th><th>S2 Mode</th><th>Channel Forms?</th></tr></thead>
+          <tbody>
+            <tr><td>On</td><td>On</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>On</td><td>Desirable / Auto</td><td style="color:var(--red)">No</td></tr>
+            <tr><td>Desirable</td><td>Desirable</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Desirable</td><td>Auto</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Auto</td><td>Desirable</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Auto</td><td>Auto</td><td style="color:var(--red)">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <h3>LACP — Link Aggregation Control Protocol (IEEE 802.3ad)</h3>
+      <p>IEEE standard — works in <strong>multivendor environments</strong>. Performs same function as PAgP. Cisco devices support both.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>S1 Mode</th><th>S2 Mode</th><th>Channel Forms?</th></tr></thead>
+          <tbody>
+            <tr><td>On</td><td>On</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>On</td><td>Active / Passive</td><td style="color:var(--red)">No</td></tr>
+            <tr><td>Active</td><td>Active</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Active</td><td>Passive</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Passive</td><td>Active</td><td style="color:var(--green)">Yes</td></tr>
+            <tr><td>Passive</td><td>Passive</td><td style="color:var(--red)">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px;"><strong>Key rule:</strong> At least ONE side must be active/initiating. Two passive sides = no channel.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m6)"></div>
+      <h2>6.2 — Configure EtherChannel</h2>
+    </div>
+    <div class="card">
+      <h3>Configuration Guidelines</h3>
+      <ul>
+        <li>All interfaces must support EtherChannel (don't need to be physically contiguous)</li>
+        <li>Same <strong>speed and duplex</strong> on all member interfaces</li>
+        <li>All interfaces must be in the <strong>same VLAN</strong> or all configured as trunks</li>
+        <li>Same <strong>allowed VLAN range</strong> on all trunk interfaces</li>
+        <li>Ports with different native VLANs <strong>cannot form an EtherChannel</strong></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>LACP Configuration — 3 Steps</h3>
+      <ul>
+        <li><strong>Step 1:</strong> <span class="cmd">interface range f0/1 - 2</span> — select the physical interfaces</li>
+        <li><strong>Step 2:</strong> <span class="cmd">channel-group 1 mode active</span> — create the port channel using LACP</li>
+        <li><strong>Step 3:</strong> <span class="cmd">interface port-channel 1</span> → then <span class="cmd">switchport mode trunk</span> + <span class="cmd">switchport trunk allowed vlan 10,20</span></li>
+      </ul>
+      <p style="margin-top:8px;">For PAgP: use <span class="cmd">mode desirable</span> or <span class="cmd">mode auto</span>. For no negotiation: <span class="cmd">mode on</span> (both sides must use <em>on</em>).</p>
+      <p style="margin-top:6px;"><strong>Important:</strong> When modifying an existing EtherChannel, remove and re-add the port-channel interface rather than changing directly — to avoid STP errdisabled state.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m6)"></div>
+      <h2>6.3 — Verify &amp; Troubleshoot EtherChannel</h2>
+    </div>
+    <div class="card">
+      <h3>Verification Commands</h3>
+      <ul>
+        <li><span class="cmd">show interfaces port-channel</span> — general status of the port-channel interface</li>
+        <li><span class="cmd">show etherchannel summary</span> — one line per port channel; shows if up/down</li>
+        <li><span class="cmd">show etherchannel port-channel</span> — info on a specific port channel</li>
+        <li><span class="cmd">show interfaces etherchannel</span> — role of each physical member interface</li>
+        <li><span class="cmd">show run | begin interface port-channel</span> — view detailed port-channel config</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Common EtherChannel Issues</h3>
+      <ul>
+        <li>Ports not in the same VLAN or not all configured as trunks</li>
+        <li>Ports with <strong>different native VLANs</strong> — cannot form EtherChannel</li>
+        <li>Trunking configured on only <em>some</em> ports in the bundle, not all</li>
+        <li>Different <strong>allowed VLAN ranges</strong> — won't form even if PAgP is set to auto/desirable</li>
+        <li><strong>Incompatible negotiation modes</strong> — e.g., one side is PAgP auto, other is LACP active</li>
+        <li>Speed or duplex mismatch between member interfaces</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-topbar">
+      <h2>Module 6 Quiz</h2>
+      <div class="score-badge" id="score-m6">0 / 12</div>
+    </div>
+    <div id="qbox-m6"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ MODULE 7 ═══════════════════════════════════ -->
+<div id="p-m7" class="page">
+<div class="container">
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m7)"></div>
+      <h2>7.1 — DHCPv4 Concepts</h2>
+    </div>
+    <div class="card">
+      <h3>How DHCPv4 Works</h3>
+      <p>DHCPv4 (Dynamic Host Configuration Protocol v4) dynamically assigns IPv4 addresses and configuration. The server <strong>leases</strong> an address for a limited period (typically 24 hours to 1 week+).</p>
+      <ul style="margin-top:8px;">
+        <li>When lease expires, client must request another — usually gets the same address back</li>
+        <li>Lease mechanism prevents powered-off devices from hoarding addresses</li>
+        <li>A Cisco router can serve as a DHCPv4 server (no dedicated server required)</li>
+        <li>DHCPv4 service is <strong>enabled by default</strong> on Cisco IOS</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>DORA — 4-Step Lease Process</h3>
+      <ul>
+        <li><strong>D — DHCPDISCOVER:</strong> Client broadcasts to find a DHCP server (source: 0.0.0.0, dest: 255.255.255.255)</li>
+        <li><strong>O — DHCPOFFER:</strong> Server offers an available IP address</li>
+        <li><strong>R — DHCPREQUEST:</strong> Client broadcasts acceptance of the offer (also notifies other DHCP servers that their offers were rejected)</li>
+        <li><strong>A — DHCPACK:</strong> Server acknowledges and confirms the lease</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>2-Step Lease Renewal Process</h3>
+      <ul>
+        <li><strong>DHCPREQUEST:</strong> Client sends <em>directly (unicast)</em> to the original DHCP server before lease expires. If no response, client broadcasts DHCPREQUEST to other servers.</li>
+        <li><strong>DHCPACK:</strong> Server verifies lease info and confirms renewal</li>
+      </ul>
+      <p style="margin-top:8px;">Note: DHCPOFFER and DHCPACK can be sent as unicast or broadcast per RFC 2131.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m7)"></div>
+      <h2>7.2 — Configure a Cisco IOS DHCPv4 Server</h2>
+    </div>
+    <div class="card">
+      <h3>3-Step Configuration</h3>
+      <ul>
+        <li><strong>Step 1 — Exclude addresses:</strong><br><span class="cmd">ip dhcp excluded-address 192.168.10.1 192.168.10.10</span><br><span style="font-size:12px;color:var(--text3)">Reserve static addresses for routers, servers, printers</span></li>
+        <li style="margin-top:8px;"><strong>Step 2 — Create pool:</strong><br><span class="cmd">ip dhcp pool LAN-POOL-1</span><br><span style="font-size:12px;color:var(--text3)">Enters Router(dhcp-config)# mode</span></li>
+        <li style="margin-top:8px;"><strong>Step 3 — Configure pool options (in dhcp-config mode):</strong>
+          <ul>
+            <li><span class="cmd">network 192.168.10.0 255.255.255.0</span></li>
+            <li><span class="cmd">default-router 192.168.10.1</span></li>
+            <li><span class="cmd">dns-server 8.8.8.8 8.8.4.4</span></li>
+            <li><span class="cmd">domain-name example.com</span></li>
+            <li><span class="cmd">lease 7</span> (days) or <span class="cmd">lease infinite</span></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Verification Commands</h3>
+      <ul>
+        <li><span class="cmd">show running-config | section dhcp</span> — view all DHCP config</li>
+        <li><span class="cmd">show ip dhcp binding</span> — IP-to-MAC address bindings issued</li>
+        <li><span class="cmd">show ip dhcp server statistics</span> — count of messages sent/received</li>
+      </ul>
+      <p style="margin-top:8px;">Disable: <span class="cmd">no service dhcp</span> &nbsp;|&nbsp; Re-enable: <span class="cmd">service dhcp</span></p>
+    </div>
+    <div class="card">
+      <h3>DHCPv4 Relay Agent</h3>
+      <p>When the DHCP server is on a <strong>different subnet</strong> from clients, routers don't forward broadcasts by default. Solution:</p>
+      <p style="margin-top:8px;"><span class="cmd">ip helper-address 192.168.11.6</span> (configure on the interface <em>facing the clients</em>)</p>
+      <p style="margin-top:8px;">This converts the DHCP broadcast from the client into a <strong>unicast</strong> sent to the DHCP server.</p>
+      <p style="margin-top:8px;"><strong>The ip helper-address command also forwards these 8 UDP services:</strong></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Port</th><th>Service</th></tr></thead>
+          <tbody>
+            <tr><td>37</td><td>Time</td></tr>
+            <tr><td>49</td><td>TACACS</td></tr>
+            <tr><td>53</td><td>DNS</td></tr>
+            <tr><td>67</td><td>DHCP/BOOTP server</td></tr>
+            <tr><td>68</td><td>DHCP/BOOTP client</td></tr>
+            <tr><td>69</td><td>TFTP</td></tr>
+            <tr><td>137</td><td>NetBIOS name service</td></tr>
+            <tr><td>138</td><td>NetBIOS datagram service</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m7)"></div>
+      <h2>7.3 — Configure a DHCPv4 Client</h2>
+    </div>
+    <div class="card">
+      <h3>Router as DHCPv4 Client</h3>
+      <p>Cisco routers in SOHO/branch environments can act as DHCP clients (e.g., connecting to an ISP via DSL or cable modem).</p>
+      <p style="margin-top:8px;"><span class="cmd">ip address dhcp</span> (on the WAN interface — interface config mode)</p>
+      <p style="margin-top:6px;">Verify: <span class="cmd">show ip interface g0/0/1</span> — confirms interface is up and address was allocated.</p>
+      <p style="margin-top:8px;">Home routers are typically preconfigured as <strong>"Automatic Configuration – DHCP"</strong> on the WAN side, connecting to the ISP as a DHCPv4 client.</p>
+    </div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-topbar">
+      <h2>Module 7 Quiz</h2>
+      <div class="score-badge" id="score-m7">0 / 12</div>
+    </div>
+    <div id="qbox-m7"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ MODULE 8 ═══════════════════════════════════ -->
+<div id="p-m8" class="page">
+<div class="container">
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m8)"></div>
+      <h2>8.1 — IPv6 GUA Assignment</h2>
+    </div>
+    <div class="card">
+      <h3>Three RA Message Flags</h3>
+      <p>ICMPv6 Router Advertisement (RA) messages contain 3 flags that tell hosts how to obtain a GUA:</p>
+      <ul style="margin-top:8px;">
+        <li><span class="flag flag-a">A flag</span> <strong>Address Autoconfiguration</strong> — A=1: use SLAAC to create a GUA from the advertised prefix</li>
+        <li><span class="flag flag-o">O flag</span> <strong>Other Configuration</strong> — O=1: get additional info (DNS, domain) from a stateless DHCPv6 server</li>
+        <li><span class="flag flag-m">M flag</span> <strong>Managed Address Configuration</strong> — M=1: use a stateful DHCPv6 server for all IPv6 configuration</li>
+      </ul>
+      <div class="table-wrap" style="margin-top:12px;">
+        <table>
+          <thead><tr><th>A</th><th>O</th><th>M</th><th>Method Used</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>0</td><td>0</td><td>SLAAC only (default when ipv6 unicast-routing is enabled)</td></tr>
+            <tr><td>1</td><td>1</td><td>0</td><td>SLAAC for GUA + stateless DHCPv6 for extra config</td></tr>
+            <tr><td>0</td><td>0</td><td>1</td><td>Stateful DHCPv6 — server provides everything</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:8px;">IPv6 link-local address (fe80::/10) is <strong>automatically created</strong> when the host boots and the Ethernet interface is active — even without a router present.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m8)"></div>
+      <h2>8.2 — SLAAC</h2>
+    </div>
+    <div class="card">
+      <h3>SLAAC Overview</h3>
+      <p>Stateless Address Autoconfiguration — hosts create their own IPv6 GUA <strong>without any DHCPv6 server</strong>. It's "stateless" because no server maintains address binding records.</p>
+      <ul style="margin-top:8px;">
+        <li>Router sends RA every <strong>200 seconds</strong></li>
+        <li>Host sends <strong>Router Solicitation (RS)</strong> to ff02::2 to request an RA immediately (doesn't wait 200 sec)</li>
+        <li>Router joins all-routers group via <span class="cmd">ipv6 unicast-routing</span> — begins sending RA to ff02::1</li>
+        <li>Default: A=1, O=0, M=0 — SLAAC only</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Interface ID Generation Methods (last 64 bits)</h3>
+      <p>Host gets the 64-bit prefix from RA, then generates the 64-bit Interface ID using either:</p>
+      <ul style="margin-top:8px;">
+        <li><strong>Random generation</strong> — Windows 10 default. Better privacy (MAC not exposed).</li>
+        <li><strong>EUI-64</strong> — Takes 48-bit MAC address, inserts hex <strong>fffe</strong> in the middle → 64-bit ID. Privacy concern: MAC address is embedded in the IPv6 address.</li>
+      </ul>
+      <p style="margin-top:8px;">Windows, Linux, and Mac OS all allow configuring which method to use.</p>
+    </div>
+    <div class="card">
+      <h3>Duplicate Address Detection (DAD)</h3>
+      <p>Before using a self-generated IPv6 address, the host runs DAD:</p>
+      <ol style="padding-left:1.2rem; margin-top:8px;">
+        <li>Host sends ICMPv6 <strong>Neighbor Solicitation (NS)</strong> to a specially constructed solicited-node multicast address (uses last 24 bits of its IPv6 address)</li>
+        <li>If <strong>no Neighbor Advertisement (NA) reply</strong> is received → address is unique → safe to use</li>
+        <li>If an <strong>NA is received</strong> → address is a duplicate → must generate a new interface ID and repeat DAD</li>
+      </ol>
+      <p style="margin-top:8px;">IETF recommends DAD even though the chance of a 64-bit duplicate is extremely remote. Most OSes perform DAD on all IPv6 unicast addresses.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m8)"></div>
+      <h2>8.3 — DHCPv6</h2>
+    </div>
+    <div class="card">
+      <h3>DHCPv6 Operation — 6-Step Process</h3>
+      <ol style="padding-left:1.2rem;">
+        <li>Host sends <strong>RS</strong> (Router Solicitation)</li>
+        <li>Router responds with <strong>RA</strong> (indicating to use DHCPv6)</li>
+        <li>Host sends <strong>DHCPv6 SOLICIT</strong> to find a DHCPv6 server</li>
+        <li>Server responds with <strong>ADVERTISE</strong></li>
+        <li>Host responds to server (REQUEST or INFORMATION-REQUEST)</li>
+        <li>Server sends <strong>REPLY</strong></li>
+      </ol>
+      <p style="margin-top:10px;"><strong>UDP ports:</strong> client → server = <strong>547</strong> &nbsp;|&nbsp; server → client = <strong>546</strong></p>
+    </div>
+    <div class="card">
+      <h3>Stateless vs Stateful DHCPv6</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Feature</th><th>Stateless DHCPv6</th><th>Stateful DHCPv6</th></tr></thead>
+          <tbody>
+            <tr><td>GUA source</td><td>SLAAC (from RA)</td><td>DHCPv6 server</td></tr>
+            <tr><td>DNS, domain</td><td>DHCPv6 server</td><td>DHCPv6 server</td></tr>
+            <tr><td>Maintains IP bindings?</td><td>No (stateless)</td><td>Yes (stateful)</td></tr>
+            <tr><td>O flag</td><td>1</td><td>0</td></tr>
+            <tr><td>M flag</td><td>0</td><td>1</td></tr>
+            <tr><td>Enable command</td><td><span class="cmd">ipv6 nd other-config-flag</span></td><td><span class="cmd">ipv6 nd managed-config-flag</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="mod-dot" style="background:var(--m8)"></div>
+      <h2>8.4 — Configure DHCPv6 Server</h2>
+    </div>
+    <div class="card">
+      <h3>DHCPv6 Router Roles</h3>
+      <ul>
+        <li><strong>DHCPv6 Server</strong> — provides stateless or stateful DHCPv6 services to clients</li>
+        <li><strong>DHCPv6 Client</strong> — acquires IPv6 configuration from a DHCPv6 server</li>
+        <li><strong>DHCPv6 Relay Agent</strong> — forwards DHCPv6 messages between different networks</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Stateless DHCPv6 Server — 5 Steps</h3>
+      <ol style="padding-left:1.2rem;">
+        <li><span class="cmd">ipv6 unicast-routing</span> — enable IPv6 routing</li>
+        <li><span class="cmd">ipv6 dhcp pool POOL-NAME</span> — define pool</li>
+        <li>Configure pool: <span class="cmd">dns-server</span>, <span class="cmd">domain-name</span></li>
+        <li><span class="cmd">ipv6 dhcp server POOL-NAME</span> — bind pool to interface</li>
+        <li><span class="cmd">ipv6 nd other-config-flag</span> — set O flag = 1 (RA tells clients to get extra info from DHCPv6)</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>Stateful DHCPv6 Server — 5+ Steps</h3>
+      <ol style="padding-left:1.2rem;">
+        <li><span class="cmd">ipv6 unicast-routing</span></li>
+        <li><span class="cmd">ipv6 dhcp pool POOL-NAME</span></li>
+        <li>Configure: <span class="cmd">address prefix 2001:db8:acad:1::/64</span>, <span class="cmd">dns-server</span>, <span class="cmd">domain-name</span></li>
+        <li><span class="cmd">ipv6 dhcp server POOL-NAME</span></li>
+        <li><span class="cmd">ipv6 nd managed-config-flag</span> — set M flag = 1</li>
+        <li><span class="cmd">ipv6 nd prefix default no-autoconfig</span> — set A flag = 0 (don't use SLAAC)</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>DHCPv6 Relay Agent</h3>
+      <p>When client and DHCPv6 server are on different networks, configure relay on the interface facing clients:</p>
+      <p style="margin-top:8px;"><span class="cmd">ipv6 dhcp relay destination 2001:db8::1 g0/0/0</span></p>
+      <p style="margin-top:6px;">The egress interface is only required when the next-hop address is a Link-Local Address (LLA).</p>
+      <p style="margin-top:8px;">Verify: <span class="cmd">show ipv6 dhcp interface</span> and <span class="cmd">show ipv6 dhcp binding</span></p>
+    </div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-topbar">
+      <h2>Module 8 Quiz</h2>
+      <div class="score-badge" id="score-m8">0 / 13</div>
+    </div>
+    <div id="qbox-m8"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ COMMANDS ═══════════════════════════════════ -->
+<div id="p-cmd" class="page">
+<div class="container">
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m5)"></div><h2>Module 5 — STP Commands</h2></div>
+    <div id="cmd-m5"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m6)"></div><h2>Module 6 — EtherChannel Commands</h2></div>
+    <div id="cmd-m6"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m7)"></div><h2>Module 7 — DHCPv4 Commands</h2></div>
+    <div id="cmd-m7"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m8)"></div><h2>Module 8 — SLAAC &amp; DHCPv6 Commands</h2></div>
+    <div id="cmd-m8"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ GLOSSARY ═══════════════════════════════════ -->
+<div id="p-gloss" class="page">
+<div class="container">
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m5)"></div><h2>Module 5 — STP Terms</h2></div>
+    <div class="glossary-grid" id="gloss-m5"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m6)"></div><h2>Module 6 — EtherChannel Terms</h2></div>
+    <div class="glossary-grid" id="gloss-m6"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m7)"></div><h2>Module 7 — DHCPv4 Terms</h2></div>
+    <div class="glossary-grid" id="gloss-m7"></div>
+  </div>
+  <div class="section">
+    <div class="section-head"><div class="mod-dot" style="background:var(--m8)"></div><h2>Module 8 — SLAAC &amp; DHCPv6 Terms</h2></div>
+    <div class="glossary-grid" id="gloss-m8"></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ COMPARE ═══════════════════════════════════ -->
+<div id="p-compare" class="page">
+<div class="container">
+  <div class="section">
+    <div class="section-head"><h2>STP Port States: Original vs RSTP</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>STP State</th><th>RSTP Equivalent</th><th>Forwards Frames?</th><th>Learns MACs?</th></tr></thead><tbody>
+      <tr><td>Disabled</td><td rowspan="3" style="background:rgba(239,68,68,0.07);color:var(--text2)">Discarding</td><td>No</td><td>No</td></tr>
+      <tr><td>Blocking</td><td>No</td><td>No</td></tr>
+      <tr><td>Listening</td><td>No</td><td>No</td></tr>
+      <tr><td>Learning</td><td>Learning</td><td>No</td><td>Yes</td></tr>
+      <tr><td>Forwarding</td><td style="color:var(--green)">Forwarding</td><td style="color:var(--green)">Yes</td><td style="color:var(--green)">Yes</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>PAgP vs LACP</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Feature</th><th>PAgP</th><th>LACP</th></tr></thead><tbody>
+      <tr><td>Standard</td><td>Cisco proprietary</td><td>IEEE 802.3ad</td></tr>
+      <tr><td>Multivendor?</td><td style="color:var(--red)">No — Cisco only</td><td style="color:var(--green)">Yes</td></tr>
+      <tr><td>Active mode</td><td>Desirable</td><td>Active</td></tr>
+      <tr><td>Passive mode</td><td>Auto</td><td>Passive</td></tr>
+      <tr><td>Max ports/group</td><td>8</td><td>8</td></tr>
+      <tr><td>Packet interval</td><td>Every 30 seconds</td><td>30 sec (slow) / 1 sec (fast)</td></tr>
+      <tr><td>No-channel combos</td><td>Auto + Auto, On + Desirable/Auto</td><td>Passive + Passive, On + Active/Passive</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>DHCPv4 vs DHCPv6</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Feature</th><th>DHCPv4</th><th>DHCPv6</th></tr></thead><tbody>
+      <tr><td>Address type</td><td>IPv4</td><td>IPv6 GUA</td></tr>
+      <tr><td>First client msg</td><td>DHCPDISCOVER (broadcast)</td><td>SOLICIT (multicast)</td></tr>
+      <tr><td>Server reply</td><td>DHCPOFFER</td><td>ADVERTISE</td></tr>
+      <tr><td>Client acceptance</td><td>DHCPREQUEST</td><td>REQUEST</td></tr>
+      <tr><td>Server confirmation</td><td>DHCPACK</td><td>REPLY</td></tr>
+      <tr><td>Client→Server port</td><td>UDP 67</td><td>UDP 547</td></tr>
+      <tr><td>Server→Client port</td><td>UDP 68</td><td>UDP 546</td></tr>
+      <tr><td>Relay agent cmd</td><td>ip helper-address</td><td>ipv6 dhcp relay destination</td></tr>
+      <tr><td>Works without DHCP?</td><td>APIPA (169.254.x.x)</td><td>Yes — SLAAC</td></tr>
+      <tr><td>Stateless option?</td><td>No</td><td>Yes (O flag)</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>IPv6 GUA Assignment Methods</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Method</th><th>A</th><th>O</th><th>M</th><th>GUA From</th><th>Extra Config From</th></tr></thead><tbody>
+      <tr><td>SLAAC only</td><td>1</td><td>0</td><td>0</td><td>SLAAC</td><td>RA only</td></tr>
+      <tr><td>SLAAC + stateless DHCPv6</td><td>1</td><td>1</td><td>0</td><td>SLAAC</td><td>Stateless DHCPv6 server</td></tr>
+      <tr><td>Stateful DHCPv6</td><td>0</td><td>0</td><td>1</td><td>Stateful DHCPv6 server</td><td>Stateful DHCPv6 server</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>STP Port Cost Reference</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Link Speed</th><th>STP Cost (802.1D-1998)</th><th>RSTP Cost (802.1w-2004)</th></tr></thead><tbody>
+      <tr><td>10 Gbps</td><td>2</td><td>2,000</td></tr>
+      <tr><td>1 Gbps</td><td>4</td><td>20,000</td></tr>
+      <tr><td>100 Mbps</td><td>19</td><td>200,000</td></tr>
+      <tr><td>10 Mbps</td><td>100</td><td>2,000,000</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><h2>STP Timer Reference</h2></div>
+    <div class="table-wrap"><table><thead><tr><th>Timer</th><th>Default</th><th>Range</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td>Hello</td><td>2 seconds</td><td>1–10 sec</td><td>Interval between BPDU transmissions</td></tr>
+      <tr><td>Forward Delay</td><td>15 seconds</td><td>4–30 sec</td><td>Time spent in Listening AND Learning states (each)</td></tr>
+      <tr><td>Max Age</td><td>20 seconds</td><td>6–40 sec</td><td>Max wait before STP topology change attempt</td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ FINAL EXAM ═══════════════════════════════════ -->
+<div id="p-exam" class="page">
+<div class="container">
+  <div class="exam-score-hero">
+    <div class="big-num" id="exam-score-big">0 / 20</div>
+    <div class="score-label">MIXED FINAL EXAM · All 4 Modules</div>
+    <div class="prog-track"><div class="prog-fill" id="exam-prog" style="width:0%"></div></div>
+  </div>
+  <div id="exam-qbox"></div>
+</div>
+</div>
+
+<footer>
+  SRWE v7.0 · Modules 5–8 Reviewer · Cisco Networking Academy · Built for study purposes
+</footer>
+
+<script>
+// ── PAGE SWITCH ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── QUIZ DATA ──
+const quizData = {
+  m5: [
+    { q:"What problem does STP solve in a redundant Layer 2 network?", choices:["IP address conflicts between switches","Layer 2 loops causing broadcast storms and MAC table instability","Routing loops between routers","VLAN misconfiguration"], correct:1, exp:"STP prevents Layer 2 loops that would otherwise cause broadcast storms, MAC address table instability, link saturation, and high CPU utilization — making the network completely unusable." },
+    { q:"Who invented the Spanning Tree Algorithm (STA)?", choices:["Vint Cerf","Tim Berners-Lee","Radia Perlman","Bob Metcalfe"], correct:2, exp:"Radia Perlman invented the spanning tree algorithm while at Digital Equipment Corporation, published in her 1985 paper. She also wrote a poem about it called 'Algoryme'." },
+    { q:"What is the default bridge priority value on Cisco switches?", choices:["0","4096","32768","61440"], correct:2, exp:"The default bridge priority is 32768. When all switches have the same priority, the switch with the lowest MAC address becomes the root bridge." },
+    { q:"When two switches have the same bridge priority, what determines the root bridge?", choices:["Highest MAC address","Lowest MAC address","Highest IP address","Switch uptime"], correct:1, exp:"When bridge priorities are equal, the switch with the lowest hexadecimal MAC address wins the election." },
+    { q:"What is the STP port cost for a 100 Mbps link (IEEE 802.1D)?", choices:["2","4","19","100"], correct:2, exp:"Per IEEE 802.1D, 100 Mbps = cost 19. For 1 Gbps = 4, 10 Gbps = 2, 10 Mbps = 100." },
+    { q:"Which port state forwards data frames AND updates the MAC address table?", choices:["Blocking","Listening","Learning","Forwarding"], correct:3, exp:"Only the Forwarding state forwards frames. Learning updates the MAC table but doesn't forward. Blocking only receives BPDUs." },
+    { q:"What is the default Hello Timer in STP?", choices:["1 second","2 seconds","15 seconds","20 seconds"], correct:1, exp:"The default Hello Timer is 2 seconds — the interval between BPDU transmissions. Forward Delay is 15 sec and Max Age is 20 sec." },
+    { q:"An alternate (blocked) port in STP is in this state to prevent loops:", choices:["Forwarding","Learning","Listening","Blocking"], correct:3, exp:"Alternate (backup) ports are placed in the blocking state. They receive BPDUs but do not forward user data." },
+    { q:"When multiple equal-cost paths exist to root, what is the FIRST tiebreaker?", choices:["Lowest sender port ID","Lowest sender port priority","Lowest sender BID","Lowest local port number"], correct:2, exp:"Order: 1) Lowest sender BID, 2) Lowest sender port priority (default 128), 3) Lowest sender port ID. All based on the SENDER's values." },
+    { q:"RSTP (IEEE 802.1w) reduces STP port states from 5 to how many?", choices:["2","3","4","5"], correct:1, exp:"RSTP uses 3 port states: Discarding (merges disabled, blocking, listening), Learning, and Forwarding." },
+    { q:"PortFast should ONLY be used on which type of port?", choices:["Trunk ports between switches","Uplink ports to routers","Access ports connecting end devices","All ports by default"], correct:2, exp:"PortFast is only for access ports (PCs, printers, DHCP clients). Using it on switch-to-switch links risks creating spanning tree loops." },
+    { q:"What happens when BPDU Guard receives a BPDU on a PortFast port?", choices:["Ignores the BPDU","Sends BPDU to root bridge","Puts port in errdisabled state immediately","Removes PortFast from that port"], correct:2, exp:"BPDU Guard immediately puts the port in errdisabled state when any BPDU is received. Admin must manually re-enable." },
+    { q:"Cisco switches running IOS 15.0+ run which STP variant by default?", choices:["Original STP (802.1D)","RSTP (802.1w)","PVST+","Rapid PVST+"], correct:2, exp:"Cisco IOS 15.0+ runs PVST+ by default. Rapid PVST+ must be explicitly configured." },
+    { q:"In PVST, how many root bridge elections occur?", choices:["One for the entire network","One per switch","One per VLAN","One per subnet"], correct:2, exp:"PVST+ runs a separate STP instance per VLAN, so a separate root bridge election happens per VLAN." },
+    { q:"Why doesn't Layer 2 Ethernet prevent loops on its own?", choices:["Ethernet has TTL to limit frames","Ethernet has no mechanism to limit looping frames — STP fills this gap","Ethernet uses Hop Limit fields","Ethernet automatically detects loops"], correct:1, exp:"IPv4 uses TTL and IPv6 uses Hop Limit, but Ethernet has no comparable mechanism. STP was developed specifically to prevent Layer 2 looping." }
+  ],
+  m6: [
+    { q:"What does EtherChannel group together?", choices:["Multiple VLANs into one","Multiple physical Ethernet links into one logical link","Multiple routers","Multiple switches into one management domain"], correct:1, exp:"EtherChannel groups multiple physical Ethernet links into one single logical link, providing fault-tolerance, load sharing, increased bandwidth, and redundancy." },
+    { q:"What is the virtual interface created by EtherChannel called?", choices:["Trunk interface","Port channel","EtherBundle","LAG interface"], correct:1, exp:"The resulting virtual interface is called a port channel. Physical interfaces are bundled into this port-channel interface." },
+    { q:"LACP stands for what, and what IEEE standard is it?", choices:["Link Access Control Protocol — 802.1Q","Link Aggregation Control Protocol — 802.3ad","Link Aggregation Control Protocol — 802.1D","Layer Aggregation Control Protocol — 802.3u"], correct:1, exp:"LACP (Link Aggregation Control Protocol) is IEEE 802.3ad — works in multivendor environments, unlike Cisco's proprietary PAgP." },
+    { q:"If S1 is PAgP 'auto' and S2 is also 'auto', will EtherChannel form?", choices:["Yes, auto-auto always forms","No — both are passive, neither initiates","Yes, if speeds match","Depends on VLAN config"], correct:1, exp:"Auto is passive — it only responds, never initiates. Two auto sides = no negotiation ever starts = no EtherChannel." },
+    { q:"What is the maximum number of ports per EtherChannel group?", choices:["4","6","8","16"], correct:2, exp:"Each EtherChannel can have up to 8 ports. The Cisco Catalyst 2960 supports up to 6 EtherChannels." },
+    { q:"What is Step 1 when configuring EtherChannel with LACP?", choices:["Enter port-channel interface mode","Specify interfaces using 'interface range'","Set trunking manually","Configure allowed VLANs"], correct:1, exp:"Step 1: 'interface range' to select physical interfaces. Step 2: channel-group mode active. Step 3: configure port-channel interface." },
+    { q:"Which command shows a one-line summary per EtherChannel?", choices:["show interfaces port-channel","show etherchannel summary","show etherchannel port-channel","show interfaces etherchannel"], correct:1, exp:"'show etherchannel summary' shows one line of information per port channel — useful for quickly checking if EtherChannel is up or down." },
+    { q:"LACP 'on' mode on S1 and LACP 'active' on S2 — does EtherChannel form?", choices:["Yes","No"], correct:1, exp:"No. 'On' forces channel without negotiation. If the other side uses active (sends LACP packets), no channel forms because the 'on' side doesn't negotiate." },
+    { q:"What must be true for all interfaces in an EtherChannel regarding VLANs?", choices:["All must be VLAN 1","All same VLAN or all configured as trunks","Must span multiple VLANs","VLAN doesn't matter"], correct:1, exp:"All interfaces must be in the same VLAN or all configured as trunks with matching native VLAN and allowed VLAN range." },
+    { q:"Where should EtherChannel configuration changes be made?", choices:["On each physical interface","On the port-channel interface","In global VLAN database","On root bridge only"], correct:1, exp:"Changes on the port-channel interface propagate to all physical members automatically, ensuring consistency." },
+    { q:"Can you mix FastEthernet and GigabitEthernet in one EtherChannel?", choices:["Yes, as long as speeds match","No, interface types cannot be mixed","Yes, always allowed","Only with PAgP"], correct:1, exp:"EtherChannel does NOT allow mixing interface types. All member ports must be the same type." },
+    { q:"How does STP interact with EtherChannel?", choices:["STP ignores EtherChannel","STP sees EtherChannel as one logical link — may block entire bundle","STP blocks all EtherChannel ports","EtherChannel eliminates STP"], correct:1, exp:"STP treats EtherChannel as a single logical link. If STP blocks an EtherChannel bundle, it blocks the entire bundle — not individual physical ports within it." }
+  ],
+  m7: [
+    { q:"What is DHCPv4's primary function?", choices:["Assigns static IPs permanently","Dynamically assigns IPv4 addresses and network configuration from a pool","Manages host routing tables","Configures switch VLANs"], correct:1, exp:"DHCPv4 dynamically assigns IPv4 addresses and other configuration info (gateway, DNS) from a pool, leasing them for a limited period." },
+    { q:"What are the 4 steps in the DHCP lease process?", choices:["Discover, Offer, Request, Acknowledge","Discover, Order, Request, Assign","Detect, Offer, Reserve, Assign","Discover, Offer, Respond, Allocate"], correct:0, exp:"DORA: DHCPDISCOVER (client broadcasts) → DHCPOFFER (server offers) → DHCPREQUEST (client accepts) → DHCPACK (server confirms)." },
+    { q:"During lease renewal, how does the client first contact the DHCP server?", choices:["Broadcast to all servers","Directly (unicast) to the original server","Multicast","Via relay agent only"], correct:1, exp:"For lease renewal, the client sends DHCPREQUEST unicast to the original server. If no DHCPACK, it broadcasts to find other servers." },
+    { q:"Which command creates a DHCPv4 pool named 'LAN-POOL-1'?", choices:["ip dhcp excluded-address LAN-POOL-1","ip dhcp pool LAN-POOL-1","dhcp pool create LAN-POOL-1","service dhcp LAN-POOL-1"], correct:1, exp:"'ip dhcp pool pool-name' creates the pool and puts the router into DHCPv4 configuration mode (Router(dhcp-config)#)." },
+    { q:"What command excludes addresses 192.168.10.1 through 192.168.10.10 from DHCP?", choices:["no ip dhcp address 192.168.10.1 192.168.10.10","ip dhcp excluded-address 192.168.10.1 192.168.10.10","ip dhcp reserve 192.168.10.1 192.168.10.10","exclude dhcp 192.168.10.1 192.168.10.10"], correct:1, exp:"'ip dhcp excluded-address low-address [high-address]' excludes addresses from the pool. Used for static assignments." },
+    { q:"Which command shows IP-to-MAC bindings issued by DHCP?", choices:["show running-config | section dhcp","show ip dhcp server statistics","show ip dhcp binding","show ip interface dhcp"], correct:2, exp:"'show ip dhcp binding' displays all IPv4 to MAC address bindings provided by the DHCPv4 service." },
+    { q:"Why is a DHCP relay agent needed?", choices:["To speed up DHCP","Routers don't forward broadcasts — relay is needed when DHCP server is on different subnet","To encrypt DHCP messages","To assign static addresses to MACs"], correct:1, exp:"Routers don't forward broadcast messages. 'ip helper-address' on the router converts DHCP broadcasts to unicasts and forwards them to the server." },
+    { q:"Which UDP port does the ip helper-address command forward for DNS?", choices:["TFTP — 69","TACACS — 49","DNS — 53","NetBIOS — 137"], correct:2, exp:"Port 53 is DNS. The 8 forwarded ports are: 37 (Time), 49 (TACACS), 53 (DNS), 67 (DHCP server), 68 (DHCP client), 69 (TFTP), 137 (NetBIOS name), 138 (NetBIOS datagram)." },
+    { q:"How do you configure a router interface to get its IP from a DHCP server?", choices:["ip address auto","ip address dhcp","dhcp client enable","ip address 0.0.0.0 dhcp"], correct:1, exp:"'ip address dhcp' (interface config mode) sets the interface to request its IP address from a DHCP server." },
+    { q:"How do you disable the DHCPv4 server process on a Cisco router?", choices:["no ip dhcp","no service dhcp","ip dhcp disable","shutdown dhcp"], correct:1, exp:"'no service dhcp' disables the DHCPv4 service. It is enabled by default. 'service dhcp' re-enables it." },
+    { q:"When a DHCP lease expires and cannot be renewed, what happens to the address?", choices:["Client keeps it indefinitely","Server returns it to the pool for reallocation","Router assigns new IP automatically","Client gets an APIPA address"], correct:1, exp:"When a lease expires, the DHCP server returns the address to the pool for reallocation. This prevents powered-off devices from holding addresses." },
+    { q:"Which DHCPv4 pool command sets the default gateway for clients?", choices:["gateway address","default-router address","ip-gateway address","router-address address"], correct:1, exp:"'default-router address' sets the default gateway in the DHCP pool. Up to 8 addresses can be specified." }
+  ],
+  m8: [
+    { q:"What does the 'A flag' in an IPv6 RA message tell a host?", choices:["Use stateful DHCPv6","Use SLAAC to create a GUA from the advertised prefix","Get only DNS from DHCPv6","Use static IPv6 config"], correct:1, exp:"A flag = 1 means: use SLAAC. The host takes the 64-bit prefix from the RA and generates its own 64-bit Interface ID." },
+    { q:"What does SLAAC stand for?", choices:["Static Layer Address Autoconfiguration","Stateless Address Autoconfiguration","Stateful Automatic Address Configuration","Subnet Level Address Autoconfiguration"], correct:1, exp:"SLAAC = Stateless Address Autoconfiguration. Hosts create their own IPv6 GUA without a DHCPv6 server." },
+    { q:"How often does a router send RA messages by default?", choices:["Every 30 seconds","Every 60 seconds","Every 200 seconds","Every 1800 seconds"], correct:2, exp:"Routers send RA messages every 200 seconds. A router also sends RA immediately if it receives an RS from a host." },
+    { q:"What IPv6 multicast address do hosts send Router Solicitation (RS) to?", choices:["ff02::1 (all nodes)","ff02::2 (all routers)","ff02::5 (OSPF)","ff02::1:2 (DHCP servers)"], correct:1, exp:"RS messages go to ff02::2 (all-routers multicast). RA messages are sent back to ff02::1 (all-nodes multicast)." },
+    { q:"In EUI-64, what is inserted in the middle of the 48-bit MAC address?", choices:["ff:ff","fe:80","ff:fe","00:00"], correct:2, exp:"EUI-64 inserts 'fffe' in the middle of the 48-bit MAC to create a 64-bit Interface ID. Privacy concern: host MAC is embedded." },
+    { q:"What ICMPv6 message does DAD use to verify address uniqueness?", choices:["Checks MACs using ARP","Neighbor Solicitation to a solicited-node multicast address","DHCPv6 SOLICIT","Router Advertisement"], correct:1, exp:"DAD sends an ICMPv6 NS to a solicited-node multicast address (last 24 bits of the host's IPv6 address). No NA reply = address is unique." },
+    { q:"What DHCPv6 message does a host send first to start DHCPv6?", choices:["DHCPv6 DISCOVER","DHCPv6 REQUEST","DHCPv6 SOLICIT","DHCPv6 ADVERTISE"], correct:2, exp:"The DHCPv6 process starts with the host sending DHCPv6 SOLICIT. Server replies ADVERTISE, host responds, server sends REPLY." },
+    { q:"Which UDP port do client-to-server DHCPv6 messages use?", choices:["546","547","67","68"], correct:1, exp:"Client-to-server DHCPv6 uses UDP 547. Server-to-client uses UDP 546. (Compare DHCPv4: server=67, client=68)" },
+    { q:"What command enables stateless DHCPv6 on a router interface (sets O flag)?", choices:["ipv6 nd managed-config-flag","ipv6 nd other-config-flag","ipv6 dhcp stateless","ipv6 unicast-routing"], correct:1, exp:"'ipv6 nd other-config-flag' sets O flag = 1: use SLAAC for GUA but contact stateless DHCPv6 server for extra info like DNS." },
+    { q:"What command enables stateful DHCPv6 on a router interface (sets M flag)?", choices:["ipv6 nd other-config-flag","ipv6 nd managed-config-flag","ipv6 dhcp stateful enable","ipv6 unicast-routing"], correct:1, exp:"'ipv6 nd managed-config-flag' sets M flag = 1: host contacts stateful DHCPv6 server for all IPv6 addressing." },
+    { q:"How does a stateful DHCPv6 server differ from stateless?", choices:["Uses different UDP ports","Maintains a list of IPv6 address bindings","Only provides DNS info","Doesn't need ipv6 unicast-routing"], correct:1, exp:"Stateful DHCPv6 assigns GUAs AND maintains binding records (which address is assigned to which client). Stateless only provides config info." },
+    { q:"Which command shows DHCPv6 pool details including active clients?", choices:["show ip dhcp binding","show ipv6 dhcp pool","show ipv6 dhcp binding","show ipv6 interface brief"], correct:1, exp:"'show ipv6 dhcp pool' verifies pool name, parameters, and number of active clients. 'show ipv6 dhcp binding' shows actual addresses assigned." },
+    { q:"When is an IPv6 link-local address automatically created?", choices:["Only after DHCPv6 assigns it","When host boots and Ethernet interface becomes active","Only after SLAAC completes","When admin manually configures it"], correct:1, exp:"The IPv6 link-local address is auto-created when the host boots and Ethernet interface becomes active — even without a router or DHCPv6 server." }
+  ]
+};
+
+// ── COMMAND DATA ──
+const cmdData = {
+  m5: [
+    ["spanning-tree mode rapid-pvst", "Enable Rapid PVST+ on the switch (global config)"],
+    ["spanning-tree vlan 1 root primary", "Force this switch to be root bridge for VLAN 1"],
+    ["spanning-tree vlan 1 priority 4096", "Manually set bridge priority (must be in increments of 4096)"],
+    ["spanning-tree portfast", "Enable PortFast on an access port (interface config mode)"],
+    ["spanning-tree portfast default", "Enable PortFast on all non-trunk ports globally"],
+    ["spanning-tree bpduguard enable", "Enable BPDU Guard on a specific interface"],
+    ["spanning-tree vlan 1 port-priority 64", "Set STP port priority — lower = preferred for root port election"],
+    ["spanning-tree vlan 1 cost 10", "Manually set port cost for VLAN 1 on this interface"],
+    ["show spanning-tree", "Display spanning tree info — root bridge, port roles, states"],
+    ["show spanning-tree vlan 1", "Show STP details for VLAN 1 specifically"],
+    ["show spanning-tree summary", "Summary of STP mode, root bridge status, port counts"],
+    ["show spanning-tree detail", "Detailed STP info including timers and BPDU counters"]
+  ],
+  m6: [
+    ["interface range f0/1 - 2", "Select multiple interfaces at once for configuration"],
+    ["channel-group 1 mode active", "Create EtherChannel group 1 using LACP active mode"],
+    ["channel-group 1 mode passive", "Create EtherChannel group 1 using LACP passive mode"],
+    ["channel-group 1 mode desirable", "Create EtherChannel group 1 using PAgP desirable mode"],
+    ["channel-group 1 mode auto", "Create EtherChannel group 1 using PAgP auto mode"],
+    ["channel-group 1 mode on", "Force EtherChannel without any negotiation protocol"],
+    ["interface port-channel 1", "Enter port-channel interface config mode"],
+    ["switchport mode trunk", "Configure port-channel as trunk (run on port-channel interface)"],
+    ["switchport trunk allowed vlan 10,20,30", "Specify allowed VLANs on the trunk EtherChannel"],
+    ["show etherchannel summary", "One-line status per port channel — check if up/down"],
+    ["show etherchannel port-channel", "Detailed info about a specific port channel interface"],
+    ["show interfaces port-channel 1", "General status of port-channel 1 interface"],
+    ["show interfaces f0/1 etherchannel", "Show role of a physical member interface in EtherChannel"]
+  ],
+  m7: [
+    ["ip dhcp excluded-address 192.168.10.1 192.168.10.10", "Exclude address range from DHCP pool (Step 1)"],
+    ["ip dhcp pool LAN-POOL-1", "Create named DHCP pool — enters dhcp-config mode (Step 2)"],
+    ["network 192.168.10.0 255.255.255.0", "Define the address pool network (in dhcp-config mode)"],
+    ["default-router 192.168.10.1", "Set default gateway for DHCP clients"],
+    ["dns-server 8.8.8.8 8.8.4.4", "Set DNS server(s) for DHCP clients (up to 8 addresses)"],
+    ["domain-name example.com", "Set domain name for DHCP clients"],
+    ["lease 7", "Set lease duration (days). Use 'lease infinite' for no expiry"],
+    ["no service dhcp", "Disable DHCP server process (global config)"],
+    ["service dhcp", "Re-enable DHCP server process (enabled by default)"],
+    ["ip helper-address 192.168.11.6", "Configure DHCP relay agent on router interface facing clients"],
+    ["ip address dhcp", "Configure interface to get IP from DHCP server (router as client)"],
+    ["show running-config | section dhcp", "Display only DHCPv4-related running configuration"],
+    ["show ip dhcp binding", "View all IP-to-MAC address bindings issued by DHCP"],
+    ["show ip dhcp server statistics", "Count of DHCP messages sent and received"],
+    ["show ip interface g0/0/1", "Verify interface is up and DHCP client address received"]
+  ],
+  m8: [
+    ["ipv6 unicast-routing", "Enable IPv6 routing AND start sending RA messages (required first step)"],
+    ["ipv6 address 2001:db8:acad:1::1/64", "Manually configure IPv6 GUA on interface"],
+    ["ipv6 enable", "Enable IPv6 on interface and auto-create link-local address"],
+    ["ipv6 address autoconfig", "Configure interface to use SLAAC (router as SLAAC client)"],
+    ["ipv6 nd other-config-flag", "Set O flag=1 — stateless DHCPv6 (SLAAC + extra info from DHCPv6)"],
+    ["ipv6 nd managed-config-flag", "Set M flag=1 — stateful DHCPv6 (get all config from DHCPv6 server)"],
+    ["ipv6 nd prefix default no-autoconfig", "Set A flag=0 — tell hosts not to use SLAAC (for stateful DHCPv6)"],
+    ["ipv6 dhcp pool IPV6-POOL", "Create a DHCPv6 pool (global config)"],
+    ["address prefix 2001:db8:acad:1::/64", "Set address prefix in DHCPv6 pool (stateful only)"],
+    ["dns-server 2001:4860:4860::8888", "Set IPv6 DNS server in DHCPv6 pool"],
+    ["domain-name example.com", "Set domain name in DHCPv6 pool"],
+    ["ipv6 dhcp server IPV6-POOL", "Bind DHCPv6 pool to interface (interface config mode)"],
+    ["ipv6 address dhcp", "Configure interface to get IPv6 from stateful DHCPv6 (router as client)"],
+    ["ipv6 dhcp relay destination 2001:db8::1 g0/0/0", "Configure DHCPv6 relay agent — server address and egress interface"],
+    ["show ipv6 dhcp pool", "Verify pool name, parameters, and number of active clients"],
+    ["show ipv6 dhcp binding", "View IPv6 link-local and GUA assigned to clients (stateful)"],
+    ["show ipv6 dhcp interface g0/0/1", "Verify DHCPv6 server/relay on interface or client received info"],
+    ["show ipv6 interface g0/0/1", "Verify IPv6 addresses and multicast groups joined"],
+    ["show ipv6 interface brief", "Quick overview of all IPv6 interfaces and their addresses"]
+  ]
+};
+
+// ── GLOSSARY DATA ──
+const glossData = {
+  m5: [
+    ["STP / 802.1D","Spanning Tree Protocol — loop-prevention protocol creating a loop-free Layer 2 topology using the Spanning Tree Algorithm."],
+    ["STA","Spanning Tree Algorithm — invented by Radia Perlman; selects root bridge and determines loop-free paths."],
+    ["BPDU","Bridge Protocol Data Unit — frames exchanged between switches for root bridge election and port role decisions. Sent every 2 seconds."],
+    ["BID","Bridge ID — Bridge Priority + Extended System ID (VLAN) + MAC address. Lowest BID = root bridge."],
+    ["Root Bridge","Switch with the lowest BID — the reference point for all STP path calculations. All its ports are designated ports."],
+    ["Root Port","Port on a non-root switch with the lowest cost path to the root bridge. One per non-root switch."],
+    ["Designated Port","One per segment — the port with the best (lowest cost) path to root on that segment. Forwards traffic."],
+    ["Alternate Port","Neither root nor designated — placed in blocking state to prevent loops. Still receives BPDUs."],
+    ["Root Path Cost","Internal root path cost = sum of all port costs from a switch to the root bridge. Lower = preferred path."],
+    ["Broadcast Storm","Abnormally high broadcasts overwhelming the network — caused by Layer 2 loops. Can disable network in seconds."],
+    ["PVST+","Per-VLAN Spanning Tree Plus — Cisco's STP with separate 802.1D instance per VLAN. Default on IOS 15.0+."],
+    ["RSTP / 802.1w","Rapid Spanning Tree Protocol — faster convergence (sometimes milliseconds). 3 port states: Discarding, Learning, Forwarding."],
+    ["Rapid PVST+","Cisco's RSTP + PVST+ = separate 802.1w instance per VLAN. Must be explicitly configured."],
+    ["MSTP / MST","Multiple Spanning Tree — maps multiple VLANs to same instance. MST = Cisco implementation (up to 16 RSTP instances)."],
+    ["PortFast","Bypasses 30-second Listening+Learning delay — port goes immediately to Forwarding. Use only on access ports."],
+    ["BPDU Guard","Puts a PortFast port into errdisabled state if any BPDU is received. Admin must manually re-enable."],
+    ["Hello Timer","Default 2-second interval between BPDU transmissions. Range: 1–10 sec."],
+    ["Forward Delay","Default 15-second time spent in Listening AND Learning states (each). Range: 4–30 sec."],
+    ["Max Age","Default 20-second max wait before STP topology change attempt. Range: 6–40 sec."],
+    ["errdisabled","Error-disabled state — port is administratively shutdown due to a security/protocol violation (e.g., BPDU Guard triggered)."]
+  ],
+  m6: [
+    ["EtherChannel","Link aggregation technology grouping multiple physical Ethernet links into one logical link for bandwidth, redundancy, and load sharing."],
+    ["Port Channel","The logical virtual interface created by EtherChannel. Config on port-channel propagates to all physical member ports."],
+    ["Link Aggregation","Combining multiple physical links into one logical link to increase bandwidth without STP blocking them."],
+    ["PAgP","Port Aggregation Protocol — Cisco proprietary. Modes: On, Desirable (active), Auto (passive). Sends packets every 30 sec."],
+    ["LACP","Link Aggregation Control Protocol — IEEE 802.3ad standard. Modes: On, Active, Passive. Works with any vendor."],
+    ["PAgP Desirable","Active mode — initiates EtherChannel negotiation by sending PAgP packets to neighbor."],
+    ["PAgP Auto","Passive mode — responds to PAgP packets but never initiates. Auto + Auto = no channel."],
+    ["LACP Active","Active mode — initiates EtherChannel negotiation by sending LACP packets."],
+    ["LACP Passive","Passive mode — responds to LACP packets but never initiates. Passive + Passive = no channel."],
+    ["EtherChannel 'On'","Forces EtherChannel without any negotiation. Both sides must be 'on' for it to work."]
+  ],
+  m7: [
+    ["DHCP","Dynamic Host Configuration Protocol — automatically assigns IP addresses and network configuration to clients."],
+    ["DHCP Lease","Temporary IP address assignment for a defined period (typically 24 hrs–1 week). Client must renew before expiry."],
+    ["DHCPDISCOVER","Client's first broadcast message — seeks any available DHCP server. Source: 0.0.0.0, Destination: 255.255.255.255."],
+    ["DHCPOFFER","Server's reply offering an available IPv4 address to the requesting client."],
+    ["DHCPREQUEST","Client's broadcast accepting the offer — also notifies other DHCP servers that their offers were rejected. Also used for renewal."],
+    ["DHCPACK","Server's acknowledgment confirming the lease assignment and providing all configuration info."],
+    ["DHCP Pool","A named range of IP addresses a DHCP server can lease to clients."],
+    ["Excluded Address","IP address(es) removed from DHCP pool — reserved for static assignment (routers, servers, printers)."],
+    ["DHCP Relay Agent","Router with ip helper-address configured — forwards DHCP broadcasts across subnets as unicasts to remote DHCP server."],
+    ["ip helper-address","Command enabling DHCP relay. Also forwards 7 other UDP services (DNS, TFTP, TACACS, NetBIOS, etc.)"]
+  ],
+  m8: [
+    ["GUA","Global Unicast Address — globally routable IPv6 address. Equivalent to a public IPv4 address."],
+    ["LLA","Link-Local Address — auto-created on boot (fe80::/10). Not routable beyond the local link."],
+    ["SLAAC","Stateless Address Autoconfiguration — host creates its own GUA from RA prefix + self-generated Interface ID. No DHCP server needed."],
+    ["RA","Router Advertisement — ICMPv6 message sent every 200 sec (or on RS request) containing prefix, A/O/M flags, and config info."],
+    ["RS","Router Solicitation — ICMPv6 message sent by host to ff02::2 requesting an RA immediately."],
+    ["A Flag","Address Autoconfiguration flag in RA. A=1: use SLAAC to create GUA from advertised prefix."],
+    ["O Flag","Other Configuration flag in RA. O=1: get extra config (DNS, domain) from a stateless DHCPv6 server."],
+    ["M Flag","Managed Address Configuration flag in RA. M=1: get all IPv6 config from a stateful DHCPv6 server."],
+    ["EUI-64","Extended Unique Identifier-64 — method to create 64-bit Interface ID by inserting 'fffe' in the middle of a 48-bit MAC address."],
+    ["DAD","Duplicate Address Detection — uses ICMPv6 NS/NA to verify a self-generated IPv6 address is unique before use."],
+    ["NS","Neighbor Solicitation — ICMPv6 message used in DAD and for neighbor discovery (IPv6's equivalent of ARP)."],
+    ["NA","Neighbor Advertisement — ICMPv6 reply to NS. Receiving an NA during DAD = address is a duplicate."],
+    ["Stateless DHCPv6","DHCPv6 server provides only extra config (DNS, domain) — NOT the GUA. Host uses SLAAC for address. Server doesn't track bindings."],
+    ["Stateful DHCPv6","DHCPv6 server assigns GUA and all config to clients. Server maintains a list of IPv6 address bindings."],
+    ["DHCPv6 Relay Agent","Router that forwards DHCPv6 messages between clients and a DHCPv6 server on a different network."],
+    ["ff02::1","IPv6 all-nodes multicast address — RA messages are sent here."],
+    ["ff02::2","IPv6 all-routers multicast address — RS messages are sent here. Routers join this group via ipv6 unicast-routing."],
+    ["Solicited-node Multicast","Special multicast address used in DAD — formed from the last 24 bits of the host's IPv6 address."],
+    ["Zone ID / Scope ID","The '%' and number at the end of a link-local address — used by OS to associate LLA with a specific interface."]
+  ]
+};
+
+// ── FINAL EXAM QUESTIONS ──
+const examQ = [
+  { mod:"m5", q:"A switch port that is not a root port and not a designated port is called:", choices:["Trunk port","Alternate (blocked) port","Backup port","Access port"], correct:1, exp:"Ports that are not root or designated become alternate (backup) ports in blocking state — this is STP's core loop-prevention mechanism." },
+  { mod:"m6", q:"S1 uses LACP active, S2 uses LACP passive. Does EtherChannel form?", choices:["No — both must be active","Yes — active + passive is a valid LACP combination","No — active requires 'on' on the other side","Yes but only using PAgP"], correct:1, exp:"LACP active + passive = valid. Active initiates, passive responds. Both active works too. Passive + Passive fails." },
+  { mod:"m7", q:"A PC on 192.168.10.0/24 can't get an IP from the server at 192.168.11.6. No DHCP config on the router. What's the fix?", choices:["Add 'ip address dhcp' on WAN interface","Configure 'ip helper-address 192.168.11.6' on interface facing the PC","Create a DHCP pool on the local router","Run 'no service dhcp'"], correct:1, exp:"Routers don't forward broadcasts. The DHCP DISCOVER never reaches the remote server. 'ip helper-address' converts the broadcast to unicast and forwards it." },
+  { mod:"m8", q:"A host receives RA with A=1, O=1, M=0. What does it do?", choices:["Use stateful DHCPv6 for everything","Use SLAAC for GUA + contact stateless DHCPv6 server for DNS/domain info","Use only RA information — no DHCPv6","Wait for stateful DHCPv6 only"], correct:1, exp:"A=1: use SLAAC for GUA. O=1: contact stateless DHCPv6 server for additional info (DNS). M=0: do NOT use stateful DHCPv6." },
+  { mod:"m5", q:"Total STP delay for a port moving from blocking to forwarding (standard STP):", choices:["2 seconds","15 seconds","20 seconds","30 seconds"], correct:3, exp:"15 sec Listening + 15 sec Learning = 30 seconds total. PortFast bypasses this entire delay." },
+  { mod:"m6", q:"Which EtherChannel mode combination will NEVER form a channel?", choices:["LACP Active + Passive","PAgP Desirable + Auto","LACP Active + Active","LACP Passive + Passive"], correct:3, exp:"Passive + Passive and Auto + Auto never form a channel — both sides wait for the other to initiate. At least one must be active/initiating." },
+  { mod:"m7", q:"Which command correctly excludes IPs 10.0.0.1–10.0.0.20 from DHCP?", choices:["ip dhcp pool exclude 10.0.0.1 10.0.0.20","ip dhcp excluded-address 10.0.0.1 10.0.0.20","no ip dhcp address 10.0.0.1 10.0.0.20","ip dhcp reserve 10.0.0.1 10.0.0.20"], correct:1, exp:"'ip dhcp excluded-address low-address [high-address]' is the correct syntax for excluding a range from DHCP." },
+  { mod:"m8", q:"During DAD, a host receives a Neighbor Advertisement (NA). What does this mean?", choices:["Address is unique — safe to use","Address is a duplicate — generate a new interface ID","DAD was successful","Router confirmed the address"], correct:1, exp:"Receiving an NA means another device already uses that address. The host must generate a new interface ID and repeat DAD." },
+  { mod:"m5", q:"Which STP variety maps MULTIPLE VLANs to the SAME spanning tree instance?", choices:["PVST+","Rapid PVST+","MSTP / MST","CST (original STP)"], correct:2, exp:"MSTP/MST maps multiple VLANs to the same instance. PVST+ and Rapid PVST+ run a separate instance per VLAN." },
+  { mod:"m6", q:"S1 uses PAgP 'auto', S2 uses PAgP 'on'. Why won't EtherChannel form?", choices:["On mode only works with LACP","'On' forces channel without negotiation — auto (passive) keeps waiting for PAgP packets that 'on' never sends","Auto requires the other side to also be auto","PAgP doesn't support 'on' mode"], correct:1, exp:"'On' mode forces EtherChannel without any protocol negotiation. It only works if the OTHER side is also 'on'. Auto keeps waiting for PAgP packets." },
+  { mod:"m7", q:"'show ip dhcp binding' shows:", choices:["DHCP server message count statistics","DHCPv4 pool configuration settings","IPv4-to-MAC address mappings issued by DHCP","Excluded address ranges"], correct:2, exp:"'show ip dhcp binding' lists all IPv4-to-MAC address bindings — showing which client (by MAC) has which leased IP address." },
+  { mod:"m8", q:"What command enables a router to send RA messages for SLAAC?", choices:["ipv6 slaac enable","ipv6 nd ra-interval 200","ipv6 unicast-routing","ipv6 enable"], correct:2, exp:"'ipv6 unicast-routing' enables IPv6 routing AND causes the router to join ff02::2 (all-routers group), starting RA transmissions to ff02::1." },
+  { mod:"m5", q:"What is the Extended System ID in a BID used for?", choices:["Switch serial number","Include the VLAN number in the BID for PVST+","Indicate STP version running","Represent port priority value"], correct:1, exp:"The Extended System ID adds the VLAN number to the bridge priority, allowing PVST+ to run separate STP instances per VLAN using the same base switch." },
+  { mod:"m6", q:"EtherChannel trunk VLAN changes should be made where?", choices:["On each physical interface separately","On the port-channel interface","In the global VLAN database","On the root bridge only"], correct:1, exp:"Changes on the port-channel interface propagate to all physical member interfaces. Changing individual interfaces can cause compatibility issues." },
+  { mod:"m7", q:"Which UDP service is NOT forwarded by ip helper-address?", choices:["TFTP — port 69","DNS — port 53","HTTP — port 80","TACACS — port 49"], correct:2, exp:"HTTP (port 80) is NOT forwarded. The 8 forwarded services are: Time (37), TACACS (49), DNS (53), DHCP server (67), DHCP client (68), TFTP (69), NetBIOS name (137), NetBIOS datagram (138)." },
+  { mod:"m8", q:"A stateful DHCPv6 server differs from stateless because it:", choices:["Uses different multicast addresses","Maintains a list of IPv6 address bindings — tracks which addresses are assigned","Only provides DNS info","Doesn't require ipv6 unicast-routing"], correct:1, exp:"Stateful DHCPv6 assigns GUAs to clients AND maintains binding records. Stateless DHCPv6 only provides extra config and does NOT track address state." },
+  { mod:"m5", q:"Two switches with equal-cost paths, same BID and same port priority — what is the final tiebreaker?", choices:["Lowest receiver port ID","Highest sender port ID","Lowest sender port ID","Lowest receiver BID"], correct:2, exp:"Final tiebreaker: lowest sender port ID. Decision based on SENDER's port ID, not receiver's. The port connected to the lower sender port ID becomes the root port." },
+  { mod:"m8", q:"A DHCPv6 relay agent is configured when:", choices:["DHCPv6 server is on same subnet","DHCPv6 server is on a different network than clients","SLAAC is not working locally","Router runs IOS 12.x"], correct:1, exp:"If the DHCPv6 server is on a different network from clients, configure the router between them as a relay agent using 'ipv6 dhcp relay destination'." },
+  { mod:"m6", q:"Maximum bandwidth with a Gigabit EtherChannel (8 ports)?", choices:["1 Gbps","4 Gbps","8 Gbps","10 Gbps"], correct:2, exp:"8 Gigabit ports × 1 Gbps = 8 Gbps maximum. Fast EtherChannel maxes at 800 Mbps (8 × 100 Mbps)." },
+  { mod:"m7", q:"Correct order of DHCP lease process:", choices:["OFFER → DISCOVER → REQUEST → ACK","DISCOVER → OFFER → REQUEST → ACK","REQUEST → DISCOVER → OFFER → ACK","DISCOVER → REQUEST → OFFER → ACK"], correct:1, exp:"DORA: DHCPDISCOVER → DHCPOFFER → DHCPREQUEST → DHCPACK. The client broadcasts DISCOVER, server offers, client requests (broadcasts acceptance), server acknowledges." }
+];
+
+// ── RENDER FUNCTIONS ──
+const scores = { m5:0, m6:0, m7:0, m8:0, exam:0 };
+const answered = {};
+
+function renderQuiz(module, containerId, scoreId) {
+  const container = document.getElementById(containerId);
+  if (!container || container.children.length > 0) return;
+  const qs = quizData[module];
+  document.getElementById(scoreId).textContent = `0 / ${qs.length}`;
+  qs.forEach((q, qi) => {
+    const id = module + '_' + qi;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    const letters = ['A','B','C','D'];
+    card.innerHTML = `
+      <div class="q-meta">Q${qi+1} of ${qs.length}</div>
+      <div class="q-text">${q.q}</div>
+      ${q.choices.map((c,ci)=>`<button class="choice-btn" id="ch_${id}_${ci}" onclick="selectChoice('${id}',${ci},'${module}',${qi},'${scoreId}',${qs.length})"><span class="choice-key">${letters[ci]}</span>${c}</button>`).join('')}
+      <div class="explanation-box" id="exp_${id}">${q.exp}</div>
+      <button class="btn-check" id="btn_${id}" onclick="checkChoice('${id}',${q.correct},'${module}',${qi},'${scoreId}',${qs.length})">Check answer</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectChoice(id, ci, mod, qi, scoreId, total) {
+  if (answered[id+'_done']) return;
+  document.querySelectorAll(`[id^="ch_${id}_"]`).forEach(b => b.classList.remove('selected'));
+  document.getElementById(`ch_${id}_${ci}`).classList.add('selected');
+  answered[id] = ci;
+}
+
+function checkChoice(id, correct, mod, qi, scoreId, total) {
+  if (answered[id+'_done'] || answered[id] === undefined) return;
+  answered[id+'_done'] = true;
+  const sel = answered[id];
+  document.querySelectorAll(`[id^="ch_${id}_"]`).forEach(b => { b.onclick=null; b.style.cursor='default'; b.classList.remove('selected'); });
+  document.getElementById(`ch_${id}_${sel}`).classList.add(sel===correct?'correct':'wrong');
+  if (sel !== correct) document.getElementById(`ch_${id}_${correct}`).classList.add('correct');
+  document.getElementById(`exp_${id}`).classList.add('show');
+  document.getElementById(`btn_${id}`).style.display='none';
+  if (sel === correct) scores[mod]++;
+  document.getElementById(scoreId).textContent = `${scores[mod]} / ${total}`;
+}
+
+function renderCmds() {
+  ['m5','m6','m7','m8'].forEach(m => {
+    const el = document.getElementById('cmd-'+m);
+    if (!el || el.children.length) return;
+    cmdData[m].forEach(([cmd, desc]) => {
+      const d = document.createElement('div');
+      d.className = 'cmd-block';
+      d.innerHTML = `<span class="cmd-line">${cmd}</span><span class="cmd-desc">${desc}</span>`;
+      el.appendChild(d);
+    });
+  });
+}
+
+function renderGloss() {
+  ['m5','m6','m7','m8'].forEach(m => {
+    const el = document.getElementById('gloss-'+m);
+    if (!el || el.children.length) return;
+    glossData[m].forEach(([name, def]) => {
+      const d = document.createElement('div');
+      d.className = 'gterm';
+      d.innerHTML = `<span class="gterm-name">${name}</span><span class="gterm-def">${def}</span>`;
+      el.appendChild(d);
+    });
+  });
+}
+
+function renderExam() {
+  const container = document.getElementById('exam-qbox');
+  if (!container || container.children.length) return;
+  const modColors = {m5:'tag-m5',m6:'tag-m6',m7:'tag-m7',m8:'tag-m8'};
+  const modLabels = {m5:'Module 5 · STP',m6:'Module 6 · EtherChannel',m7:'Module 7 · DHCPv4',m8:'Module 8 · SLAAC & DHCPv6'};
+  const letters = ['A','B','C','D'];
+  examQ.forEach((q, qi) => {
+    const id = 'exam_'+qi;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-meta"><span class="mod-tag ${modColors[q.mod]}">${modLabels[q.mod]}</span> &nbsp; Q${qi+1} of ${examQ.length}</div>
+      <div class="q-text">${q.q}</div>
+      ${q.choices.map((c,ci)=>`<button class="choice-btn" id="ch_${id}_${ci}" onclick="selectExam('${id}',${ci})"><span class="choice-key">${letters[ci]}</span>${c}</button>`).join('')}
+      <div class="explanation-box" id="exp_${id}">${q.exp}</div>
+      <button class="btn-check" id="btn_${id}" onclick="checkExam('${id}',${q.correct},${qi})">Check answer</button>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectExam(id, ci) {
+  if (answered[id+'_done']) return;
+  document.querySelectorAll(`[id^="ch_${id}_"]`).forEach(b => b.classList.remove('selected'));
+  document.getElementById(`ch_${id}_${ci}`).classList.add('selected');
+  answered[id] = ci;
+}
+
+function checkExam(id, correct, qi) {
+  if (answered[id+'_done'] || answered[id] === undefined) return;
+  answered[id+'_done'] = true;
+  const sel = answered[id];
+  document.querySelectorAll(`[id^="ch_${id}_"]`).forEach(b => { b.onclick=null; b.style.cursor='default'; b.classList.remove('selected'); });
+  document.getElementById(`ch_${id}_${sel}`).classList.add(sel===correct?'correct':'wrong');
+  if (sel !== correct) document.getElementById(`ch_${id}_${correct}`).classList.add('correct');
+  document.getElementById(`exp_${id}`).classList.add('show');
+  document.getElementById(`btn_${id}`).style.display='none';
+  if (sel === correct) scores.exam++;
+  const total = examQ.length;
+  document.getElementById('exam-score-big').textContent = `${scores.exam} / ${total}`;
+  document.getElementById('exam-prog').style.width = Math.round((scores.exam/total)*100)+'%';
+}
+
+// ── INIT ──
+renderQuiz('m5','qbox-m5','score-m5');
+renderQuiz('m6','qbox-m6','score-m6');
+renderQuiz('m7','qbox-m7','score-m7');
+renderQuiz('m8','qbox-m8','score-m8');
+renderCmds();
+renderGloss();
+renderExam();
+</script>
+</body>
+</html>
